@@ -1,13 +1,14 @@
 import { defineConfig } from 'vite';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
-  plugins: [
-    nodePolyfills({
-      globals: {
-        Buffer: true,
-        process: true,
-      },
-    }),
-  ],
+  define: {
+    // Inject global Buffer emulation for modern browsers
+    'global': 'globalThis',
+  },
+  resolve: {
+    alias: {
+      // Direct build references to use standard browser-ready variants
+      buffer: 'buffer/',
+    },
+  },
 });
