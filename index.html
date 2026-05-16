@@ -22,10 +22,7 @@
             padding: 2rem;
             line-height: 1.5;
         }
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-        }
+        .container { max-width: 960px; margin: 0 auto; }
         h1 { margin-bottom: 0.2rem; }
         p.subtitle { color: var(--text-muted); margin-bottom: 2rem; }
         h2 { color: var(--accent); border-bottom: 1px solid #334155; padding-bottom: 0.5rem; margin-top: 2rem; }
@@ -45,24 +42,23 @@
             color: #fff;
             padding: 0.85rem;
             border-radius: 6px;
-            box-sizing: border-box;
             font-family: monospace;
             resize: vertical;
-            min-height: 110px;
+            min-height: 120px;
         }
         .btn-group { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
         button {
             background-color: var(--accent);
             color: #0f172a;
             border: none;
-            padding: 0.8rem 1.6rem;
+            padding: 0.85rem 1.8rem;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
         }
         button:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-secondary { background-color: #64748b; color: #fff; }
+        .btn-secondary { background-color: #64748b; }
         .data-display {
             background: #0f172a;
             padding: 1rem;
@@ -75,8 +71,7 @@
         }
         .copy-btn {
             position: absolute;
-            top: 8px;
-            right: 8px;
+            top: 8px; right: 8px;
             background: #334155;
             color: #fff;
             border: none;
@@ -90,14 +85,12 @@
             grid-template-columns: 1fr;
             gap: 1.2rem;
         }
-        @media(min-width: 768px) {
-            .grid-addresses { grid-template-columns: repeat(2, 1fr); }
-        }
+        @media(min-width: 768px) { .grid-addresses { grid-template-columns: repeat(2, 1fr); } }
         #masterLogStream {
             background-color: #020617;
             border: 1px solid #334155;
             border-radius: 8px;
-            height: 200px;
+            height: 220px;
             overflow-y: auto;
             padding: 1rem;
             font-family: monospace;
@@ -112,7 +105,6 @@
             padding: 1rem;
             margin-bottom: 1.5rem;
             border-radius: 6px;
-            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -120,18 +112,18 @@
 
 <div class="container">
     <h1>Master Multi-Chain Wallet</h1>
-    <p class="subtitle">Professional TON + EVM + TRON Wallet</p>
+    <p class="subtitle">TON • Ethereum • TRON</p>
 
     <div class="warning">
-        ⚠️ <strong>Security Notice:</strong> This is a frontend demo only. Never enter real seed phrases on public websites. Use only for testing and education.
+        ⚠️ <strong>Security Notice:</strong> This is a demo application for education and testing only. 
+        Never use real seed phrases in browser demos.
     </div>
 
-    <!-- Seed Generator -->
     <div class="card">
-        <h2>1. Seed Phrase Management</h2>
+        <h2>1. Seed Phrase</h2>
         <div class="form-group">
             <label for="walletSeedInput">BIP-39 Mnemonic (12 or 24 words)</label>
-            <textarea id="walletSeedInput" placeholder="Enter or generate your seed phrase here..."></textarea>
+            <textarea id="walletSeedInput" placeholder="Click Generate or paste your seed here..."></textarea>
         </div>
         <div class="btn-group">
             <button id="runGenSeed">Generate 24-Word Seed</button>
@@ -139,99 +131,4 @@
         </div>
     </div>
 
-    <!-- Addresses -->
-    <div class="card">
-        <h2>2. Derived Multi-Chain Addresses</h2>
-        
-        <div class="form-group">
-            <label>TON V5R1 Non-Bounceable</label>
-            <div id="tonOutV5NB" class="data-display">—</div>
-            <button class="copy-btn" onclick="copyToClipboardFromId('tonOutV5NB')">Copy</button>
-        </div>
-
-        <div class="form-group">
-            <label>TON V5R1 Bounceable</label>
-            <div id="tonOutV5B" class="data-display">—</div>
-            <button class="copy-btn" onclick="copyToClipboardFromId('tonOutV5B')">Copy</button>
-        </div>
-
-        <div class="grid-addresses">
-            <div class="form-group">
-                <label>TON V4R2 Non-Bounceable</label>
-                <div id="tonOutV4NB" class="data-display">—</div>
-                <button class="copy-btn" onclick="copyToClipboardFromId('tonOutV4NB')">Copy</button>
-            </div>
-            <div class="form-group">
-                <label>Highload Wallet V2</label>
-                <div id="tonOutHLNB" class="data-display">—</div>
-                <button class="copy-btn" onclick="copyToClipboardFromId('tonOutHLNB')">Copy</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>TON Raw Hex</label>
-            <div id="tonOutRaw" class="data-display">—</div>
-            <button class="copy-btn" onclick="copyToClipboardFromId('tonOutRaw')">Copy</button>
-        </div>
-
-        <div class="grid-addresses">
-            <div class="form-group">
-                <label>Ethereum / EVM (m/44'/60'/0'/0/0)</label>
-                <div id="ethAddressOut" class="data-display">—</div>
-                <button class="copy-btn" onclick="copyToClipboardFromId('ethAddressOut')">Copy</button>
-            </div>
-            <div class="form-group">
-                <label>EVM L2 Address</label>
-                <div id="l2AddressOut" class="data-display">—</div>
-                <button class="copy-btn" onclick="copyToClipboardFromId('l2AddressOut')">Copy</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>TRON Derived Address</label>
-            <div id="tronAddressOut" class="data-display">—</div>
-            <button class="copy-btn" onclick="copyToClipboardFromId('tronAddressOut')">Copy</button>
-        </div>
-    </div>
-
-    <!-- Telemetry -->
-    <div class="card">
-        <h2>3. Live TON Mainnet Telemetry</h2>
-        <div style="display: flex; gap: 2rem; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap;">
-            <div>
-                <span style="color: var(--text-muted)">Balance:</span>
-                <div id="telemetryBalance" style="font-size: 2rem; font-weight: bold; color: var(--accent);">0.0000 TON</div>
-            </div>
-            <div>
-                <span style="color: var(--text-muted)">Status:</span>
-                <div id="telemetryStatus" style="font-family: monospace; font-weight: bold;">UNINITIALIZED</div>
-            </div>
-        </div>
-        <button id="runQueryNode">Query Live Balance</button>
-    </div>
-
-    <!-- Logs -->
-    <div class="card">
-        <h2>Execution Log Stream</h2>
-        <div id="masterLogStream">
-            <div class="log-entry">Ready. Click "Generate 24-Word Seed" to start.</div>
-        </div>
-    </div>
-</div>
-
-<script type="module" src="./main.js"></script>
-
-<script>
-    async function copyToClipboardFromId(id) {
-        const el = document.getElementById(id);
-        if (!el || el.textContent === '—') return;
-        try {
-            await navigator.clipboard.writeText(el.textContent.trim());
-            const original = el.textContent;
-            el.textContent = '✅ Copied!';
-            setTimeout(() => el.textContent = original, 1500);
-        } catch (e) {}
-    }
-</script>
-</body>
-</html>
+    <div
