@@ -1,0 +1,7 @@
+{
+  "url": "https://your-wallet-domain.com",
+  "name": "My Custom TON Wallet",
+  "iconUrl": "https://your-wallet-domain.com/logo.png",
+  "termsOfUseUrl": "https://your-wallet-domain.com/terms",
+  "privacyPolicyUrl": "https://your-wallet-domain.com/privacy"
+}
