@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ton/core": "^0.60.1",
-    "@ton/ton": "^15.2.1",
+    "@ton/core": "^0.62.0",
+    "@ton/ton": "^15.4.0",
     "bip39": "^3.1.0",
     "buffer": "^6.0.3",
     "ethers": "^6.13.0"
