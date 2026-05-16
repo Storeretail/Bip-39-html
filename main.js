@@ -1,10 +1,14 @@
 import { Buffer } from 'buffer';
 import * as bip39 from 'bip39';
 import { HDNodeWallet, Mnemonic } from 'ethers';
-import { TonClient, WalletContractV5R1, WalletContractV4, HighloadWalletContractV2 } from '@ton/ton';
+import { TonClient } from '@ton/ton';
+import { WalletContractV5R1 } from '@ton/ton/dist/wallets/v5r1/WalletContractV5R1';
+import { WalletContractV4 } from '@ton/ton/dist/wallets/v4/WalletContractV4';
+import { HighloadWalletContractV2 } from '@ton/ton/dist/wallets/highload-v2/HighloadWalletContractV2';
 import { keyPairFromSeed } from '@ton/crypto';
 
-window.Buffer = Buffer; // Establish explicit execution buffer contexts globally
+// Establish explicit execution buffer contexts globally across the window layer
+window.Buffer = Buffer;
 
 let masterTrackingV5Address = null;
 
@@ -16,6 +20,7 @@ const masterTonRpcClient = new TonClient({
 // Structural UI Logging Stream Driver
 function writeLogStream(text, executionFlag = 'info') {
     const logBox = document.getElementById('masterLogStream');
+    if (!logBox) return;
     const lineElement = document.createElement('div');
     lineElement.className = `log-entry log-${executionFlag}`;
     const timeMarker = new Date().toLocaleTimeString();
