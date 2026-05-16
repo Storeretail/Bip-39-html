@@ -1,15 +1,16 @@
 import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
+  plugins: [
+    nodePolyfills({
+      include: ['buffer'],
+      globals: {
+        Buffer: true,
+      },
+    })
+  ],
   define: {
     global: 'globalThis',
-  },
-  resolve: {
-    alias: {
-      buffer: 'buffer/',
-    },
-  },
-  optimizeDeps: {
-    include: ['buffer', '@ton/crypto'],
   },
 });
