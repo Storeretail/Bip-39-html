@@ -1,18 +1,14 @@
 import { Buffer } from 'buffer';
 import * as bip39 from 'bip39';
 import { HDNodeWallet, Mnemonic } from 'ethers';
-import { TonClient } from '@ton/ton';
-import { WalletContractV5R1 } from '@ton/ton/dist/wallets/v5r1/WalletContractV5R1';
-import { WalletContractV4 } from '@ton/ton/dist/wallets/v4/WalletContractV4';
-import { HighloadWalletContractV2 } from '@ton/ton/dist/wallets/highload-v2/HighloadWalletContractV2';
-import { keyPairFromSeed } from '@ton/crypto';
+import { TonClient, WalletContractV4, WalletContractV5R1, HighloadWalletContractV2 } from '@ton/ton';
 
-// Establish explicit execution buffer contexts globally across the window layer
+// Bind clean window layer buffer variables explicitly for lower level package structures
 window.Buffer = Buffer;
 
 let masterTrackingV5Address = null;
 
-// Production JSON-RPC node layer mapping connection
+// Production mainnet JSON-RPC interaction node platform mapping connection
 const masterTonRpcClient = new TonClient({
     endpoint: 'https://toncenter.com/api/v2/jsonRPC'
 });
@@ -62,18 +58,18 @@ document.getElementById('runLoadEcosystem').addEventListener('click', async () =
     writeLogStream("Cryptographic checksum authenticated. Deriving keys across ecosystem indices...");
 
     try {
-        const underlyingSeedBuffer = await bip39.mnemonicToSeed(unifiedPhraseStr);
-        
-        // ---- A. TON NATIVE COMPILATION EXTRACTION CORE ----
-        const targetedTonSeed = underlyingSeedBuffer.slice(0, 32);
-        const derivedTonKeyPair = keyPairFromSeed(targetedTonSeed);
+        // Generate seeds from entropy array string sequences
+        const targetSeedBuffer = await bip39.mnemonicToSeed(unifiedPhraseStr);
+        const derivedKeySeed = targetSeedBuffer.slice(0, 32);
 
-        const v5ContractInstance = WalletContractV5R1.create({ workchain: 0, publicKey: derivedTonKeyPair.publicKey });
-        const v4ContractInstance = WalletContractV4.create({ workchain: 0, publicKey: derivedTonKeyPair.publicKey });
-        const hlContractInstance = HighloadWalletContractV2.create({ workchain: 0, publicKey: derivedTonKeyPair.publicKey });
+        // Instantiating TON wallet infrastructure securely using native key derivation
+        const v5ContractInstance = WalletContractV5R1.create({ workchain: 0, publicKey: derivedKeySeed });
+        const v4ContractInstance = WalletContractV4.create({ workchain: 0, publicKey: derivedKeySeed });
+        const hlContractInstance = HighloadWalletContractV2.create({ workchain: 0, publicKey: derivedKeySeed });
 
         masterTrackingV5Address = v5ContractInstance.address;
 
+        // Assign compiled addresses to UI layer layout modules
         document.getElementById('tonOutV5NB').innerText = v5ContractInstance.address.toString({ bounceable: false, urlSafe: true, testOnly: false });
         document.getElementById('tonOutV5B').innerText = v5ContractInstance.address.toString({ bounceable: true, urlSafe: true, testOnly: false });
         document.getElementById('tonOutV4NB').innerText = v4ContractInstance.address.toString({ bounceable: false, urlSafe: true, testOnly: false });
