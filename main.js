@@ -12,91 +12,68 @@ const tonClient = new TonClient({
     endpoint: 'https://toncenter.com/api/v2/jsonRPC'
 });
 
-function log(text, level = 'info') {
-    const container = document.getElementById('masterLogStream');
+function log(text, type = 'info') {
+    const el = document.getElementById('masterLogStream');
     const entry = document.createElement('div');
-    entry.className = `log-entry log-${level}`;
-    entry.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
-    container.appendChild(entry);
-    container.scrollTop = container.scrollHeight;
+    entry.style.marginBottom = '6px';
+    if (type === 'success') entry.style.color = '#10b981';
+    if (type === 'error') entry.style.color = '#ef4444';
+    entry.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+    el.appendChild(entry);
+    el.scrollTop = el.scrollHeight;
 }
 
 // Generate Seed
 document.getElementById('runGenSeed').addEventListener('click', () => {
-    try {
-        const mnemonic = bip39.generateMnemonic(256);
-        document.getElementById('walletSeedInput').value = mnemonic;
-        log("✅ 24-word mnemonic generated successfully", "success");
-    } catch (e) {
-        log("Seed generation failed: " + e.message, "error");
-    }
+    const mnemonic = bip39.generateMnemonic(256);
+    document.getElementById('walletSeedInput').value = mnemonic;
+    log("✅ 24-word seed generated", "success");
 });
 
-// Derive Wallets
+// Derive Addresses
 document.getElementById('runLoadEcosystem').addEventListener('click', async () => {
     const input = document.getElementById('walletSeedInput').value.trim();
     const words = input.split(/\s+/).filter(Boolean);
 
     if (words.length !== 12 && words.length !== 24) {
-        log(`Invalid seed: ${words.length} words (need 12 or 24)`, "error");
+        log("❌ Seed must be 12 or 24 words", "error");
         return;
     }
 
-    if (!bip39.validateMnemonic(words.join(' '))) {
-        log("❌ Invalid mnemonic checksum", "error");
-        return;
-    }
-
-    log("Deriving keys across chains...", "success");
+    log("Deriving addresses...");
 
     try {
-        // TON
         const keyPair = await mnemonicToPrivateKey(words);
 
         const v5 = WalletContractV5R1.create({ workchain: 0, publicKey: keyPair.publicKey });
-        const v4 = WalletContractV4.create({ workchain: 0, publicKey: keyPair.publicKey });
-        const hl = HighloadWalletContractV2.create({ workchain: 0, publicKey: keyPair.publicKey });
+        document.getElementById('tonOutV5NB').textContent = v5.address.toString({ bounceable: false, urlSafe: true });
+        document.getElementById('tonOutV5B').textContent = v5.address.toString({ bounceable: true, urlSafe: true });
+        document.getElementById('tonOutV4NB').textContent = WalletContractV4.create({ workchain: 0, publicKey: keyPair.publicKey }).address.toString({ bounceable: false, urlSafe: true });
+
+        const ethMnemonic = Mnemonic.fromPhrase(words.join(' '));
+        const hd = HDNodeWallet.fromMnemonic(ethMnemonic);
+        document.getElementById('ethAddressOut').textContent = hd.derivePath("m/44'/60'/0'/0/0").address;
+
+        document.getElementById('tronAddressOut').textContent = "T" + hd.derivePath("m/44'/195'/0'/0/0").address.replace('0x','').slice(0,34);
 
         masterV5Address = v5.address;
-
-        document.getElementById('tonOutV5NB').innerText = v5.address.toString({ bounceable: false, urlSafe: true });
-        document.getElementById('tonOutV5B').innerText = v5.address.toString({ bounceable: true, urlSafe: true });
-        document.getElementById('tonOutV4NB').innerText = v4.address.toString({ bounceable: false, urlSafe: true });
-        document.getElementById('tonOutHLNB').innerText = hl.address.toString({ bounceable: false, urlSafe: true });
-
-        log("✅ TON wallets derived (V5R1, V4R2, Highload)", "success");
-
-        // EVM
-        const ethMnemonic = Mnemonic.fromPhrase(words.join(' '));
-        const hdNode = HDNodeWallet.fromMnemonic(ethMnemonic);
-        const eth = hdNode.derivePath("m/44'/60'/0'/0/0");
-        document.getElementById('ethAddressOut').innerText = eth.address;
-        log("✅ Ethereum address derived", "success");
-
-        // TRON
-        const tronNode = hdNode.derivePath("m/44'/195'/0'/0/0");
-        document.getElementById('tronAddressOut').innerText = "T" + tronNode.address.replace('0x','').slice(0,34);
-        log("✅ TRON address derived", "success");
-
+        log("✅ All addresses derived successfully", "success");
     } catch (err) {
+        log("❌ Error: " + err.message, "error");
         console.error(err);
-        log("❌ Derivation failed: " + err.message, "error");
     }
 });
 
 // Query Balance
 document.getElementById('runQueryNode').addEventListener('click', async () => {
-    if (!masterV5Address) {
-        log("Please derive wallet first", "error");
-        return;
-    }
-    log("Querying TON balance...");
+    if (!masterV5Address) return log("Please derive wallet first", "error");
+
     try {
         const state = await tonClient.getContractState(masterV5Address);
-        const balance = (Number(state.balance) / 1e9).toFixed(4);
-        document.getElementById('telemetryBalance').innerText = `${balance} TON`;
+        const balance = (Number(state.balance) / 1_000_000_000).toFixed(4);
+        document.getElementById('telemetryBalance').textContent = `${balance} TON`;
         log(`✅ Balance: ${balance} TON`, "success");
     } catch (err) {
-        log("RPC error: " + err.message, "error");
+        log("❌ Balance query failed", "error");
     }
 });
