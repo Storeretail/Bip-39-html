@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecosystem Multi-Chain Wallet Engine</title>
+    <title>Master Multi-Chain Wallet</title>
     <style>
         :root {
             --bg-primary: #0f172a;
@@ -20,43 +20,48 @@
             color: var(--text-main);
             margin: 0;
             padding: 2rem;
+            line-height: 1.5;
         }
         .container {
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
         }
-        h2 { color: var(--accent); border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
+        h1 { margin-bottom: 0.2rem; }
+        p.subtitle { color: var(--text-muted); margin-bottom: 2rem; }
+        h2 { color: var(--accent); border-bottom: 1px solid #334155; padding-bottom: 0.5rem; margin-top: 2rem; }
         .card {
             background-color: var(--bg-card);
             border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            padding: 1.6rem;
+            margin-bottom: 1.8rem;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
-        .form-group { margin-bottom: 1rem; }
+        .form-group { margin-bottom: 1.2rem; }
         label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 600; }
-        textarea, input {
+        textarea {
             width: 100%;
             background: #0f172a;
             border: 1px solid #334155;
             color: #fff;
-            padding: 0.75rem;
+            padding: 0.85rem;
             border-radius: 6px;
             box-sizing: border-box;
             font-family: monospace;
+            resize: vertical;
+            min-height: 110px;
         }
-        .btn-group { display: flex; gap: 1rem; margin-top: 1rem; }
+        .btn-group { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
         button {
             background-color: var(--accent);
             color: #0f172a;
             border: none;
-            padding: 0.75rem 1.5rem;
+            padding: 0.8rem 1.6rem;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
         }
-        button:hover { opacity: 0.9; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-secondary { background-color: #64748b; color: #fff; }
         .data-display {
             background: #0f172a;
@@ -66,11 +71,24 @@
             word-break: break-all;
             font-family: monospace;
             margin-top: 0.5rem;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #334155;
+            color: #fff;
+            border: none;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
         }
         .grid-addresses {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1rem;
+            gap: 1.2rem;
         }
         @media(min-width: 768px) {
             .grid-addresses { grid-template-columns: repeat(2, 1fr); }
@@ -79,140 +97,141 @@
             background-color: #020617;
             border: 1px solid #334155;
             border-radius: 8px;
-            height: 180px;
+            height: 200px;
             overflow-y: auto;
             padding: 1rem;
             font-family: monospace;
             font-size: 0.85rem;
         }
-        .log-entry { margin-bottom: 0.4rem; color: #fff; }
+        .log-entry { margin-bottom: 0.4rem; }
         .log-success { color: var(--success); }
         .log-error { color: var(--error); }
+        .warning {
+            background: #451a03;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Ecosystem Multi-Chain Wallet Subsystem</h1>
-    <p style="color: var(--text-muted)">Vite Production Engine Core Setup Matrix</p>
+    <h1>Master Multi-Chain Wallet</h1>
+    <p class="subtitle">Professional TON + EVM + TRON Wallet</p>
 
-    <!-- Seed Generator Card -->
+    <div class="warning">
+        ⚠️ <strong>Security Notice:</strong> This is a frontend demo only. Never enter real seed phrases on public websites. Use only for testing and education.
+    </div>
+
+    <!-- Seed Generator -->
     <div class="card">
-        <h2>1. Authentication & Entropy Matrix Setup</h2>
+        <h2>1. Seed Phrase Management</h2>
         <div class="form-group">
-            <label for="walletSeedInput">BIP-39 Mnemonic Passphrase Seed Sequence</label>
-            <textarea id="walletSeedInput" rows="3" placeholder="Paste your 12 or 24 word custom mnemonic matrix here or trigger the generation system below..."></textarea>
+            <label for="walletSeedInput">BIP-39 Mnemonic (12 or 24 words)</label>
+            <textarea id="walletSeedInput" placeholder="Enter or generate your seed phrase here..."></textarea>
         </div>
         <div class="btn-group">
-            <button id="runGenSeed">Generate 24-Word Seed Matrix</button>
-            <button id="runLoadEcosystem" class="btn-secondary">Map Core Wallet Nodes</button>
+            <button id="runGenSeed">Generate 24-Word Seed</button>
+            <button id="runLoadEcosystem" class="btn-secondary">Derive All Addresses</button>
         </div>
     </div>
 
-    <!-- Output Vector Address Visualizing Section -->
+    <!-- Addresses -->
     <div class="card">
-        <h2>2. Derived Multi-Chain Network Nodes</h2>
+        <h2>2. Derived Multi-Chain Addresses</h2>
         
         <div class="form-group">
-            <label>TON V5R1 User Friendly Non-Bounceable Address</label>
-            <div id="tonOutV5NB" class="data-display">Awaiting Node Map Activation...</div>
+            <label>TON V5R1 Non-Bounceable</label>
+            <div id="tonOutV5NB" class="data-display">—</div>
+            <button class="copy-btn" onclick="copyToClipboardFromId('tonOutV5NB')">Copy</button>
         </div>
-        
+
         <div class="form-group">
-            <label>TON V5R1 User Friendly Bounceable Address</label>
-            <div id="tonOutV5B" class="data-display">Awaiting Node Map Activation...</div>
+            <label>TON V5R1 Bounceable</label>
+            <div id="tonOutV5B" class="data-display">—</div>
+            <button class="copy-btn" onclick="copyToClipboardFromId('tonOutV5B')">Copy</button>
         </div>
 
         <div class="grid-addresses">
             <div class="form-group">
-                <label>TON V4R2 Address (Non-Bounceable)</label>
-                <div id="tonOutV4NB" class="data-display">-</div>
+                <label>TON V4R2 Non-Bounceable</label>
+                <div id="tonOutV4NB" class="data-display">—</div>
+                <button class="copy-btn" onclick="copyToClipboardFromId('tonOutV4NB')">Copy</button>
             </div>
             <div class="form-group">
-                <label>TON Highload V2 Address (Non-Bounceable)</label>
-                <div id="tonOutHLNB" class="data-display">-</div>
+                <label>Highload Wallet V2</label>
+                <div id="tonOutHLNB" class="data-display">—</div>
+                <button class="copy-btn" onclick="copyToClipboardFromId('tonOutHLNB')">Copy</button>
             </div>
         </div>
 
-        <div class="form-group" style="margin-top: 1rem;">
-            <label>TON Hexadecimal Raw String Representation</label>
-            <div id="tonOutRaw" class="data-display">-</div>
+        <div class="form-group">
+            <label>TON Raw Hex</label>
+            <div id="tonOutRaw" class="data-display">—</div>
+            <button class="copy-btn" onclick="copyToClipboardFromId('tonOutRaw')">Copy</button>
         </div>
 
-        <div class="grid-addresses" style="margin-top: 1rem;">
+        <div class="grid-addresses">
             <div class="form-group">
-                <label>Ethereum Ledger Address (m/44'/60'/0'/0/0)</label>
-                <div id="ethAddressOut" class="data-display">-</div>
+                <label>Ethereum / EVM (m/44'/60'/0'/0/0)</label>
+                <div id="ethAddressOut" class="data-display">—</div>
+                <button class="copy-btn" onclick="copyToClipboardFromId('ethAddressOut')">Copy</button>
             </div>
             <div class="form-group">
-                <label>EVM Layer-2 Ecosystem Base Vector Address</label>
-                <div id="l2AddressOut" class="data-display">-</div>
+                <label>EVM L2 Address</label>
+                <div id="l2AddressOut" class="data-display">—</div>
+                <button class="copy-btn" onclick="copyToClipboardFromId('l2AddressOut')">Copy</button>
             </div>
         </div>
 
-        <div class="form-group" style="margin-top: 1rem;">
-            <label>TRON Chain Derived Vector Path Integration Reference Address</label>
-            <div id="tronAddressOut" class="data-display">-</div>
+        <div class="form-group">
+            <label>TRON Derived Address</label>
+            <div id="tronAddressOut" class="data-display">—</div>
+            <button class="copy-btn" onclick="copyToClipboardFromId('tronAddressOut')">Copy</button>
         </div>
     </div>
 
-    <!-- Live Telemetry JSON-RPC Testing System Container -->
+    <!-- Telemetry -->
     <div class="card">
-        <h2>3. Public Mainnet Node Telemetry Channels</h2>
-        <div style="display: flex; gap: 2rem; align-items: center; margin-bottom: 1rem;">
+        <h2>3. Live TON Mainnet Telemetry</h2>
+        <div style="display: flex; gap: 2rem; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap;">
             <div>
-                <span style="color: var(--text-muted)">Live Balance:</span>
-                <div id="telemetryBalance" style="font-size: 1.8rem; font-weight: bold; color: var(--accent);">0.0000 TON</div>
+                <span style="color: var(--text-muted)">Balance:</span>
+                <div id="telemetryBalance" style="font-size: 2rem; font-weight: bold; color: var(--accent);">0.0000 TON</div>
             </div>
             <div>
-                <span style="color: var(--text-muted)">Contract Execution State:</span>
-                <div id="telemetryStatus" style="font-family: monospace; font-weight: bold; color: #fff;">UNINITIALIZED / OFFLINE</div>
+                <span style="color: var(--text-muted)">Status:</span>
+                <div id="telemetryStatus" style="font-family: monospace; font-weight: bold;">UNINITIALIZED</div>
             </div>
         </div>
-        <button id="runQueryNode">Dispatch Live JSON-RPC State Query</button>
+        <button id="runQueryNode">Query Live Balance</button>
     </div>
 
-    <!-- Global Execution Logs -->
+    <!-- Logs -->
     <div class="card">
-        <h2>Execution Stream Diagnostic Stream</h2>
+        <h2>Execution Log Stream</h2>
         <div id="masterLogStream">
-            <div class="log-entry">[SYSTEM INITIALIZATION] Awaiting key mapping trigger events sequence parsing drivers.</div>
+            <div class="log-entry">Ready. Click "Generate 24-Word Seed" to start.</div>
         </div>
     </div>
 </div>
 
 <script type="module" src="./main.js"></script>
-</body>
-</html>
 
-        <!-- BIP-44 CROSS-CHAIN EXTENSION LAYER -->
-        <div class="panel">
-            <h2>Cross-Chain Extension Matrix (BIP-44 Multi-Chain)</h2>
-            
-            <div class="metric-card" style="border-left: 3px solid var(--eth);">
-                <span class="m-lbl">Ethereum Foundation Mainnet Core (m/44'/60'/0'/0/0)</span>
-                <div id="ethAddressOut" class="m-val">Awaiting compilation matrix...</div>
-            </div>
-            <div class="metric-card" style="border-left: 3px solid var(--eth);">
-                <span class="m-lbl">Arbitrum / Base Layer-2 Integration Vectors</span>
-                <div id="l2AddressOut" class="m-val">Awaiting compilation matrix...</div>
-            </div>
-            <div class="metric-card" style="border-left: 3px solid var(--tron);">
-                <span class="m-lbl">TRON Ledger Identity Mapping (USDT Engine / m/44'/195'/0'/0/0)</span>
-                <div id="tronAddressOut" class="m-val">Awaiting compilation matrix...</div>
-            </div>
-        </div>
-
-        <!-- SYSTEM EVENT LOGGER STREAM -->
-        <div class="panel">
-            <h2>System Engine Event Log</h2>
-            <div class="log-stream" id="masterLogStream">
-                <div class="log-entry log-info">[SYSTEM] MASTER WALLET Sandbox Core Initialized successfully. Standing by.</div>
-            </div>
-        </div>
-
-    </div>
-
-    <script type="module" src="/main.js"></script>
+<script>
+    async function copyToClipboardFromId(id) {
+        const el = document.getElementById(id);
+        if (!el || el.textContent === '—') return;
+        try {
+            await navigator.clipboard.writeText(el.textContent.trim());
+            const original = el.textContent;
+            el.textContent = '✅ Copied!';
+            setTimeout(() => el.textContent = original, 1500);
+        } catch (e) {}
+    }
+</script>
 </body>
 </html>
