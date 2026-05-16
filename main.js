@@ -2,127 +2,117 @@ import { Buffer } from 'buffer';
 import * as bip39 from 'bip39';
 import { HDNodeWallet, Mnemonic } from 'ethers';
 import { TonClient, WalletContractV4, WalletContractV5R1, HighloadWalletContractV2 } from '@ton/ton';
+import { mnemonicToPrivateKey } from '@ton/crypto';
 
-// Bind clean window layer buffer variables explicitly for lower level package structures
 window.Buffer = Buffer;
 
 let masterTrackingV5Address = null;
 
-// Production mainnet JSON-RPC interaction node platform mapping connection
 const masterTonRpcClient = new TonClient({
     endpoint: 'https://toncenter.com/api/v2/jsonRPC'
 });
 
-// Structural UI Logging Stream Driver
-function writeLogStream(text, executionFlag = 'info') {
+function writeLogStream(text, level = 'info') {
     const logBox = document.getElementById('masterLogStream');
     if (!logBox) return;
-    const lineElement = document.createElement('div');
-    lineElement.className = `log-entry log-${executionFlag}`;
-    const timeMarker = new Date().toLocaleTimeString();
-    lineElement.innerText = `[${timeMarker}] ${text}`;
-    logBox.appendChild(lineElement);
+    const line = document.createElement('div');
+    line.className = `log-entry log-${level}`;
+    const time = new Date().toLocaleTimeString();
+    line.innerText = `[${time}] ${text}`;
+    logBox.appendChild(line);
     logBox.scrollTop = logBox.scrollHeight;
 }
 
-// 1. Mnemonic Generation Pipeline Execution Block
+// Generate Seed
 document.getElementById('runGenSeed').addEventListener('click', () => {
     try {
-        const structuralSecureMnemonic = bip39.generateMnemonic(256);
-        document.getElementById('walletSeedInput').value = structuralSecureMnemonic;
-        writeLogStream("Generated pristine 24-word secure high-entropy Master Wallet seed phrase sequence.", "success");
-    } catch(err) {
-        writeLogStream(`Mnemonic pipeline crash event exception: ${err.message}`, "error");
+        const mnemonic = bip39.generateMnemonic(256);
+        document.getElementById('walletSeedInput').value = mnemonic;
+        writeLogStream("✅ New 24-word secure mnemonic generated", "success");
+    } catch (err) {
+        writeLogStream(`Generation failed: ${err.message}`, "error");
     }
 });
 
-// 2. Cryptographic Matrix Mapping Execution
+// Derive All Wallets
 document.getElementById('runLoadEcosystem').addEventListener('click', async () => {
-    const rawPhraseStream = document.getElementById('walletSeedInput').value.trim().toLowerCase();
-    const splitWords = rawPhraseStream.split(/\s+/).filter(w => w.length > 0);
+    const input = document.getElementById('walletSeedInput').value.trim();
+    const words = input.split(/\s+/).filter(w => w.length > 0);
 
-    if (splitWords.length !== 12 && splitWords.length !== 24) {
-        writeLogStream(`Ecosystem Mapping Aborted: Seed block contains ${splitWords.length} indices. Standard compliance requires 12 or 24 words.`, "error");
-        alert("Ecosystem Mapping Error: Recovery seeds must be exactly 12 or 24 words long.");
+    if (words.length !== 12 && words.length !== 24) {
+        writeLogStream(`Invalid word count: ${words.length} (must be 12 or 24)`, "error");
+        alert("Seed must be 12 or 24 words.");
         return;
     }
 
-    const unifiedPhraseStr = splitWords.join(' ');
+    const mnemonicPhrase = words.join(' ');
 
-    if (!bip39.validateMnemonic(unifiedPhraseStr)) {
-        writeLogStream("Cryptographic validation check failed for specific mnemonic checksum criteria.", "error");
-        alert("Validation Error: Seed failed structural checksum assessment verification.");
+    if (!bip39.validateMnemonic(mnemonicPhrase)) {
+        writeLogStream("❌ Invalid mnemonic checksum", "error");
+        alert("Invalid mnemonic.");
         return;
     }
 
-    writeLogStream("Cryptographic checksum authenticated. Deriving keys across ecosystem indices...");
+    writeLogStream("✅ Mnemonic validated. Deriving addresses...", "success");
 
     try {
-        // Generate seeds from entropy array string sequences
-        const targetSeedBuffer = await bip39.mnemonicToSeed(unifiedPhraseStr);
-        const derivedKeySeed = targetSeedBuffer.slice(0, 32);
+        // TON
+        const keyPair = await mnemonicToPrivateKey(words);
 
-        // Instantiating TON wallet infrastructure securely using native key derivation
-        const v5ContractInstance = WalletContractV5R1.create({ workchain: 0, publicKey: derivedKeySeed });
-        const v4ContractInstance = WalletContractV4.create({ workchain: 0, publicKey: derivedKeySeed });
-        const hlContractInstance = HighloadWalletContractV2.create({ workchain: 0, publicKey: derivedKeySeed });
+        const v5 = WalletContractV5R1.create({ workchain: 0, publicKey: keyPair.publicKey });
+        const v4 = WalletContractV4.create({ workchain: 0, publicKey: keyPair.publicKey });
+        const hl = HighloadWalletContractV2.create({ workchain: 0, publicKey: keyPair.publicKey });
 
-        masterTrackingV5Address = v5ContractInstance.address;
+        masterTrackingV5Address = v5.address;
 
-        // Assign compiled addresses to UI layer layout modules
-        document.getElementById('tonOutV5NB').innerText = v5ContractInstance.address.toString({ bounceable: false, urlSafe: true, testOnly: false });
-        document.getElementById('tonOutV5B').innerText = v5ContractInstance.address.toString({ bounceable: true, urlSafe: true, testOnly: false });
-        document.getElementById('tonOutV4NB').innerText = v4ContractInstance.address.toString({ bounceable: false, urlSafe: true, testOnly: false });
-        document.getElementById('tonOutHLNB').innerText = hlContractInstance.address.toString({ bounceable: false, urlSafe: true, testOnly: false });
-        document.getElementById('tonOutRaw').innerText = v5ContractInstance.address.toRawString();
-        
-        writeLogStream("TON multi-format contract address compilation processing execution completed.", "success");
+        document.getElementById('tonOutV5NB').innerText = v5.address.toString({ bounceable: false, urlSafe: true });
+        document.getElementById('tonOutV5B').innerText = v5.address.toString({ bounceable: true, urlSafe: true });
+        document.getElementById('tonOutV4NB').innerText = v4.address.toString({ bounceable: false, urlSafe: true });
+        document.getElementById('tonOutHLNB').innerText = hl.address.toString({ bounceable: false, urlSafe: true });
+        document.getElementById('tonOutRaw').innerText = v5.address.toRawString();
 
-        // ---- B. ETHEREUM & LAYER-2 EVM MODULE SUBSYSTEMS ----
-        const coreEthersMnemonic = Mnemonic.fromPhrase(unifiedPhraseStr);
-        const underlyingHDNode = HDNodeWallet.fromMnemonic(coreEthersMnemonic);
-        
-        const evmTargetNode = underlyingHDNode.derivePath("m/44'/60'/0'/0/0");
-        document.getElementById('ethAddressOut').innerText = evmTargetNode.address;
-        document.getElementById('l2AddressOut').innerText = evmTargetNode.address; 
-        writeLogStream("EVM Derivation path parameters mapped completely: m/44'/60'/0'/0/0", "success");
+        writeLogStream("✅ TON addresses derived successfully", "success");
 
-        // ---- C. TRON INTEGRATION SUB-VECTORS ----
-        const tronTargetNode = underlyingHDNode.derivePath("m/44'/195'/0'/0/0");
-        const workingHexConversion = tronTargetNode.address.replace('0x','').toLowerCase();
-        const baseTronProtocolString = '41' + workingHexConversion;
-        document.getElementById('tronAddressOut').innerText = `T${baseTronProtocolString.substring(0, 33)}... (Inferred Path Integration Node Vector)`;
-        writeLogStream("TRON Ledger target path execution map complete: m/44'/195'/0'/0/0", "success");
+        // EVM
+        const ethersMnemonic = Mnemonic.fromPhrase(mnemonicPhrase);
+        const hdNode = HDNodeWallet.fromMnemonic(ethersMnemonic);
+        const ethWallet = hdNode.derivePath("m/44'/60'/0'/0/0");
+
+        document.getElementById('ethAddressOut').innerText = ethWallet.address;
+        document.getElementById('l2AddressOut').innerText = ethWallet.address;
+        writeLogStream("✅ EVM address derived", "success");
+
+        // TRON
+        const tronNode = hdNode.derivePath("m/44'/195'/0'/0/0");
+        const tronAddr = "T" + tronNode.address.replace('0x', '').slice(0, 32) + "...";
+        document.getElementById('tronAddressOut').innerText = tronAddr;
+        writeLogStream("✅ TRON address derived", "success");
 
     } catch (err) {
-        writeLogStream(`Ecosystem resolution encountered fault exception: ${err.message}`, "error");
         console.error(err);
+        writeLogStream(`❌ Error: ${err.message}`, "error");
     }
 });
 
-// 3. Live Account RPC Balance Scanning Logic Channel
+// Query Balance
 document.getElementById('runQueryNode').addEventListener('click', async () => {
     if (!masterTrackingV5Address) {
-        writeLogStream("Query Exception: Please initialize cryptographic context metrics using standard keys first.", "error");
-        alert("Telemetry Failure: Active ecosystem states are missing definitions.");
+        writeLogStream("Please derive wallet first", "error");
         return;
     }
 
-    writeLogStream(`Dispatching JSON-RPC data request to public mainnet nodes for address endpoint: ${masterTrackingV5Address.toString()}`);
-    
+    writeLogStream("Querying TON mainnet balance...");
+
     try {
-        const liveContractStateInfo = await masterTonRpcClient.getContractState(masterTrackingV5Address);
-        
-        const nativeNanoTonBalance = liveContractStateInfo.balance;
-        const convertedReadableBalance = (Number(nativeNanoTonBalance) / 1000000000).toFixed(4);
+        const state = await masterTonRpcClient.getContractState(masterTrackingV5Address);
+        const balanceTON = (Number(state.balance) / 1_000_000_000).toFixed(4);
 
-        document.getElementById('telemetryBalance').innerText = `${convertedReadableBalance} TON`;
-        document.getElementById('telemetryStatus').innerText = `State: ${liveContractStateInfo.state.toUpperCase()} | Code Hash Validated`;
-        
-        writeLogStream(`JSON-RPC interaction success. Balance extracted: ${convertedReadableBalance} TON. State representation: ${liveContractStateInfo.state}`, "success");
+        document.getElementById('telemetryBalance').innerText = `${balanceTON} TON`;
+        document.getElementById('telemetryStatus').innerText = `Active • ${state.state || 'unknown'}`;
 
+        writeLogStream(`✅ Balance fetched: ${balanceTON} TON`, "success");
     } catch (err) {
-        writeLogStream(`JSON-RPC ledger interaction channel execution error: ${err.message}`, "error");
-        document.getElementById('telemetryStatus').innerText = "Query Protocol Channel Error Exception";
+        console.error(err);
+        writeLogStream(`RPC Error: ${err.message}`, "error");
     }
 });
