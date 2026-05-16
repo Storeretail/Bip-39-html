@@ -1,16 +1,13 @@
 import { defineConfig } from 'vite';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
-  plugins: [
-    nodePolyfills({
-      include: ['buffer'],
-      globals: {
-        Buffer: true,
-      },
-    })
-  ],
+  base: '/',                    // Cloudflare Pages usually uses root
   define: {
     global: 'globalThis',
+  },
+  resolve: {
+    alias: {
+      buffer: 'buffer/',
+    },
   },
 });
