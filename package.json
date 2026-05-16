@@ -1,21 +1,32 @@
 {
-  "name": "master-multi-chain-wallet",
+  "name": "my-custom-ton-wallet",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ton/ton": "^15.2.1",
-    "@ton/crypto": "^3.3.0",
-    "bip39": "^3.1.0",
+    "@ton/ton": "^15.0.0",
+    "@ton/core": "^0.60.0",
+    "@ton/crypto": "^4.0.0",
+    "@tonconnect/ui-react": "^2.0.0",
     "buffer": "^6.0.3",
-    "ethers": "^6.13.5"
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.0.0"
   },
   "devDependencies": {
-    "vite": "^5.4.0"
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0"
   }
 }
